@@ -6,7 +6,7 @@
       </span>
     </div>
     <div class="text-center span-content">
-      <span v-for="letter in letter2" :id="letter" :key="letter" :class="{'press-down':letter===currentKey}">
+      <span v-for="letter in letter2" :id="letter" :key="letter" :class="{'press-down':letter===currentKey,'down-tips':letter==='F'||letter==='J'}">
         {{letter}}
       </span>
     </div>
@@ -78,6 +78,14 @@ export default {
 }
 .press-down {
   box-shadow: 0px 0px 8px red;
+}
+.down-tips {
+  position: relative;
+}
+.down-tips:after {
+  content: "";
+  position: absolute;
+  border: 5px solid aquamarine;
 }
 @media screen and (max-width: 780px){
   .span-content span{
