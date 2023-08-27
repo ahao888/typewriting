@@ -1,19 +1,29 @@
 <template>
-  <div @keydown="keydown">
-    <div class="text-center span-content">
+  <div class="container" @keydown="keydown">
+    <div v-show="playIcon" class="play-icon">
+      <transition name="el-zoom-in-center">
+        <el-icon :size="50" @click="start" class="transition-box" ><VideoPlay /></el-icon>
+      </transition>
+    </div>
+    <div>
+      <canvas id="canvas"></canvas>
+    </div>
+    <div id="letterContent">
+      <div class="text-center span-content">
       <span v-for="letter in letter1" :id="letter" :key="letter" :class="{'press-down':letter===currentKey}">
         {{letter}}
       </span>
-    </div>
-    <div class="text-center span-content">
+      </div>
+      <div class="text-center span-content">
       <span v-for="letter in letter2" :id="letter" :key="letter" :class="{'press-down':letter===currentKey,'down-tips':letter==='F'||letter==='J'}">
         {{letter}}
       </span>
-    </div>
-    <div class="text-center span-content">
+      </div>
+      <div class="text-center span-content">
       <span v-for="letter in letter3" :id="letter" :key="letter" :class="{'press-down':letter===currentKey}">
         {{letter}}
       </span>
+      </div>
     </div>
   </div>
 </template>
@@ -25,11 +35,21 @@ export default {
       letter2:['A','S','D','F','G','H','J','K','L'],
       letter3:['Z','X','C','V','B','N','M',],
       currentKey:'',
+      timeout:'',
+      playIcon:true,
+      canvas:'',
+      ctx:''
     }
   },
   created() {
     document.body.addEventListener('keydown',this.keydown)
     document.body.addEventListener('keyup',this.keyup)
+    window.addEventListener("resize", this.windowResize);
+  },
+  mounted() {
+    this.canvas = document.getElementById('canvas');
+    this.ctx = canvas.getContext('2d');
+    this.drawCanvas()
   },
   methods:{
     keydown(e) {
@@ -37,6 +57,24 @@ export default {
     },
     keyup() {
       this.currentKey = ''
+    },
+    windowResize(e) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(this.drawCanvas,500);
+    },
+    start() {
+      this.playIcon = false
+    },
+    drawCanvas() {
+      let letterContent = document.querySelector('#letterContent');
+      this.canvas.height = (document.body.clientHeight - letterContent.clientHeight - 30)
+      this.canvas.width = (document.body.clientWidth - letterContent.clientWidth - 30)
+
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
     },
     sound() {
       const synth = window.speechSynthesis; // 启用文本
@@ -99,4 +137,14 @@ export default {
     width: 20px !important;
   }
 }
+
+  .container {
+    position: relative;
+    .play-icon {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      z-index: 100;
+    }
+  }
 </style>
